@@ -1,28 +1,49 @@
 import './signIn.css';
 import { Link } from "react-router-dom";
+import { signin } from '../../api';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const SignIn = () => {
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    let navigate = useNavigate()
+
+    
+    const login = async (e) => {
+        e.preventDefault()
+        try {
+            let res = await signin(username, password)            
+            res = await res.json()
+            console.log(res)
+            localStorage.setItem('token', await res.body.token)
+            navigate('/user')
+        } catch(e){
+            console.log(e)
+        }        
+    }
+
 return (
     <>
 
-    <section class="sign-in-content">
-            <i class="fa fa-user-circle sign-in-icon"></i>
+    <section className="sign-in-content">
+            <i className="fa fa-user-circle sign-in-icon"></i>
             <h1>Sign In</h1>
-                <form>
-                <div class="input-wrapper">
+                <form onSubmit={login}>
+                <div className="input-wrapper">
                     <label for="username">Username</label>
-                    <input type="text" id="username" />
+                    <input type="text" id="username" onChange={(e) => setUsername(e.target.value)} />
                 </div>
-                <div class="input-wrapper">
+                <div className="input-wrapper">
                     <label for="password">Password</label>
-                    <input type="password" id="password" />
+                    <input type="password" id="password" onChange={(e) => setPassword(e.target.value)} />
                 </div>
-                <div class="input-remember">
+                <div className="input-remember">
                     <input type="checkbox" id="remember-me" /><label for="remember-me"
                     >Remember me</label>
                 </div>
-                <Link to="/user" class="sign-in-button">Sign In</Link>
-                {/* <button class="sign-in-button">Sign In</button> */}
+                
+                <button className="sign-in-button">Sign In</button> 
                 </form>
       </section>
 
