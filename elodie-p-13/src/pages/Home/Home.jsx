@@ -3,6 +3,7 @@ import logoChat from'../../assets/img/icon-chat.png';
 import logoMoney from '../../assets/img/icon-money.png';
 import logoSecurity from '../../assets/img/icon-security.png';
 const Home = () => {
+
 return (
     <>
    <div className="hero">

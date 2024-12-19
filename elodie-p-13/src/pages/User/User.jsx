@@ -1,12 +1,51 @@
-import './user.css'
-import { Link } from "react-router-dom";
+import { useEffect, useState } from 'react';
+import './user.css';
+import { getUserProfile } from '../../api';
+import { useDispatch, useSelector } from 'react-redux';
+import { setProfile } from '../../reducers/user';
 
 const User = () => {
+
+    const firstName = userSelector(state => state.user.firstName)
+    const lastName = userSelector(state => state.user.lastName)
+
+    const [localFirstName, setLocalFirstName] = useState(firstName)
+    const [localLastName, setLocalLastName] = useState(lastName)
+    const [edition, setEdition] = useState(false)
+    const dispatch = useDispatch()
+
+   
+    useEffect(() => {
+        getUserProfile(localStorage.getItem('token'))
+        .then((res) => res.json())
+        .then((res) => {
+            //setFirstName(res.body.firstName)
+            //setLastName(res.body.lastName)
+        })
+    }, [])
+
+
+    const setUserProfile = async (e) => {
+        e.preventDefault()
+        try {
+            dispatch(setProfile({firstName: localFirstName, lastName: localLastName}))
+            //await setUserProfile(firstName, lastName, localStorage.getItem('token'))
+            setEdition(!edition)
+        }catch(e){
+            console.log(e)
+        }
+    }
     return(
         <>
        <div className="header">
-                    <h1>Welcome back<br />Tony Jarvis!</h1>
-                    <button className="edit-button">Edit Name</button>
+                    <h1>Welcome back<br />{firstName} {lastName}!</h1>
+                    <button className="edit-button" onClick={() => setEdition(!edition)}>Edit Name</button>
+                    {(edition) ?
+                    <form onSubmit={setUserProfile}>
+                        <input value={localFirstName} placeholder='firstName' onChange={(e) => setLocalFirstName(e.target.value)}/>
+                        <input value={localLastName} placeholder='lastName' onChange={(e) => setLocalLastName(e.target.value)} />
+                        <button className="edit-button">OK</button>
+                    </form> : ''}
             </div>
             <h2 className="sr-only">Accounts</h2>
             <section className="account">
