@@ -1,35 +1,46 @@
 import { useEffect, useState } from 'react';
 import './user.css';
-import { getUserProfile } from '../../api';
 import { useDispatch, useSelector } from 'react-redux';
-import { setProfile } from '../../reducers/user';
+import { getUserProfileThunk, setUserProfileThunk } from '../../thunk';
+import { useNavigate } from 'react-router-dom';
 
 const User = () => {
 
-    const firstName = userSelector(state => state.user.firstName)
-    const lastName = userSelector(state => state.user.lastName)
+    const firstName = useSelector(state => state.user.firstName)
+    const lastName = useSelector(state => state.user.lastName)
+    const token = useSelector(state => state.user.token)
 
     const [localFirstName, setLocalFirstName] = useState(firstName)
     const [localLastName, setLocalLastName] = useState(lastName)
     const [edition, setEdition] = useState(false)
     const dispatch = useDispatch()
+    const navigate = useNavigate()
 
    
     useEffect(() => {
-        getUserProfile(localStorage.getItem('token'))
-        .then((res) => res.json())
-        .then((res) => {
-            //setFirstName(res.body.firstName)
-            //setLastName(res.body.lastName)
-        })
+        dispatch(getUserProfileThunk(token))
     }, [])
+
+    useEffect(() => {
+        setLocalFirstName(firstName)
+        setLocalLastName(lastName)
+    }, [firstName, lastName])
+
+    useEffect(() => {
+        if(!token){
+            navigate('/signin')
+        }
+    }, [token])
 
 
     const setUserProfile = async (e) => {
         e.preventDefault()
         try {
-            dispatch(setProfile({firstName: localFirstName, lastName: localLastName}))
-            //await setUserProfile(firstName, lastName, localStorage.getItem('token'))
+            dispatch(setUserProfileThunk({
+                firstName: localFirstName, 
+                lastName: localLastName,
+                token
+            }))
             setEdition(!edition)
         }catch(e){
             console.log(e)
