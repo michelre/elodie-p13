@@ -1,9 +1,24 @@
 import "./layout.css";
-import {NavLink, Outlet } from "react-router-dom";
+import {Outlet, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import logo from "../../assets/img/argentBankLogo.png";
+import { useDispatch, useSelector } from "react-redux";
+import { setToken } from "../../reducers/user";
 
 const Layout = () => {
+
+  const firstName = useSelector(state => state.user.firstName)
+  const token = useSelector(state => state.user.token)
+
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+
+  const onClickSignout = () => {
+    dispatch(setToken({token: null}))
+    localStorage.removeItem('token')
+    navigate('/signin')
+  }
+
   return (
     <>
       <header>
@@ -16,11 +31,20 @@ const Layout = () => {
             />
             <h1 className="sr-only">Argent Bank</h1>
           </Link>
-          <div>
-            <Link className="main-nav-item" to="/signIn">
-              <i className="fa fa-user-circle"></i>
-              Sign In
-            </Link>
+          <div className="main-nav-item">
+            {
+              !token ? <>
+                  <Link to="/signIn">
+                    <i className="fa fa-user-circle"></i>
+                    Sign In            
+                  </Link>
+                </> : <>
+                  <i className="fa fa-user-circle"></i> {firstName}
+                  <button className="logOut" onClick={onClickSignout}>
+                    <i className="fa fa-sign-out"></i> Sign Out
+                  </button>
+              </>
+            }
           </div>
         </nav>
       </header>

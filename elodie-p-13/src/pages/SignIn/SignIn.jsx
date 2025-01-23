@@ -1,23 +1,31 @@
 import './signIn.css';
-import { Link } from "react-router-dom";
-import { signin } from '../../api';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { signinThunk } from '../../thunk';
 
 const SignIn = () => {
-    const [username, setUsername] = useState('')
+    const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
+    const [remember, setRemember] = useState(false)
+    const token = useSelector(state => state.user.token)
     let navigate = useNavigate()
+    const dispatch = useDispatch()
+
+    useEffect(() => {
+        if(token){
+            if(remember){
+                localStorage.token = token
+            }
+            navigate('/user')
+        }
+    }, [token, remember, navigate])
 
     
     const login = async (e) => {
         e.preventDefault()
         try {
-            let res = await signin(username, password)            
-            res = await res.json()
-            console.log(res)
-            localStorage.setItem('token', await res.body.token)
-            navigate('/user')
+            dispatch(signinThunk({email, password}))   
         } catch(e){
             console.log(e)
         }        
@@ -31,15 +39,15 @@ return (
             <h1>Sign In</h1>
                 <form onSubmit={login}>
                 <div className="input-wrapper">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" onChange={(e) => setUsername(e.target.value)} />
+                    <label htmlFor="email">Username</label>
+                    <input type="text" id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 </div>
                 <div className="input-wrapper">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" onChange={(e) => setPassword(e.target.value)} />
+                    <label htmlFor="password">Password</label>
+                    <input type="password" id="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
                 <div className="input-remember">
-                    <input type="checkbox" id="remember-me" /><label for="remember-me"
+                    <input type="checkbox" id="remember-me" value={remember} onChange={e => setRemember(e.target.checked)}/><label htmlFor="remember-me"
                     >Remember me</label>
                 </div>
                 
