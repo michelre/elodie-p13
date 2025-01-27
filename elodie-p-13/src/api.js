@@ -1,5 +1,5 @@
 const signin = (email, password) => {
-  return fetch("http://127.0.0.1:3001/api/v1/user/login", {
+  return fetch("http://localhost:3001/api/v1/user/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -12,7 +12,7 @@ const signin = (email, password) => {
 };
 
 const getUserProfile = (token) => {
-  return fetch("http://127.0.0.1:3001/api/v1/user/profile", {
+  return fetch("http://localhost:3001/api/v1/user/profile", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -22,7 +22,7 @@ const getUserProfile = (token) => {
 };
 
 const setUserProfile = (firstName, lastName, token) => {
-  return fetch("http://127.0.0.1:3001/api/v1/user/profile", {
+  return fetch("http://localhost:3001/api/v1/user/profile", {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
